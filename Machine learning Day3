@@ -1,0 +1,261 @@
+import numpy as np
+import pandas as pd
+from sklearn import datasets
+
+iris = datasets.load_iris()
+X=iris.data
+y=iris.target
+print(y[0])
+
+Train-test Split:
+
+from sklearn.model_selection import train_test_split
+# Assuming you have X (features) and y (target variable) already defined
+
+# Split the dataset into training and testing sets
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
+
+# Print the shapes of the resulting datasets
+print("Shape of X_train:", X_train.shape)
+print("Shape of X_test:", X_test.shape)
+print("Shape of y_train:", y_train.shape)
+print("Shape of y_test:", y_test.shape)
+
+# Optionally, print a few samples from the datasets
+print("\nSamples from X_train:")
+print(X_train[:5])
+
+print("\nSamples from y_train:")
+print(y_train[:5])
+
+print("\nSamples from X_test:")
+print(X_test[:5])
+
+print("\nSamples from y_test:")
+print(y_test[:5])
+df=pd.DataFrame(X)
+print(df.head(3))
+
+BASIC MODELS :
+LINEAR REGRESSION
+
+from sklearn.linear_model import LinearRegression
+
+model=LinearRegression()
+model.fit(X_train,y_train)
+predictions = model.predict(X_test)
+
+linear regression for predicting a continous target variable
+
+import numpy as np
+from sklearn.model_selection import train_test_split
+from sklearn.metrics import mean_squared_error
+
+np.random.seed(42)
+X=2*np.random.rand(100,1)
+y=4+3*X+np.random.randn(100,1)
+
+X_train,X_test,y_train,y_test=train_test_split(X,y,test_size=0.2,random_state=42)
+model=LinearRegression()
+model.fit(X_train, y_train)
+
+predictions=model.predict(X_test)
+mse=mean_squared_error(y_test,predictions)
+print(f"Mean_squared_error on Test Set: {mse}")
+
+LOGISTIC REGRESSION
+###########not working due to continous data###############
+for binary or multiclass classification
+#from sklearn.linear_model import LogisticRegression
+
+#model = LogisticRegression()
+#model.fit(X_train, y_train)
+#predictions = model.predict(X_test)
+
+DECISION TREES
+for both classification and regresssion
+
+from sklearn.tree import DecisionTreeClassifier
+
+# Convert a continuous target variable to binary labels (example only)
+
+y_train_binary = (y_train > y_train.mean()).astype(int)
+
+# Create and fit the DecisionTreeClassifier
+model = DecisionTreeClassifier()
+model.fit(X_train, y_train_binary)
+predictions = model.predict(X_test)
+
+import numpy as np
+from sklearn.model_selection import train_test_split
+from sklearn.tree import DecisionTreeClassifier, DecisionTreeRegressor
+from sklearn.metrics import accuracy_score, mean_squared_error
+
+# Example data for classification
+X_classification = np.random.rand(100, 1)
+y_classification = (X_classification > 0.5).astype(int).reshape(-1)
+
+# Example data for regression
+X_regression = 5 * np.random.rand(100, 1)
+y_regression = 2 * X_regression.squeeze() + 1 + np.random.randn(100)
+
+# Split data into training and testing sets for both classification and regression
+X_train_classification, X_test_classification, y_train_classification, y_test_classification = train_test_split(
+    X_classification, y_classification, test_size=0.2, random_state=42
+)
+
+X_train_regression, X_test_regression, y_train_regression, y_test_regression = train_test_split(
+    X_regression, y_regression, test_size=0.2, random_state=42
+)
+
+# Classification using DecisionTreeClassifier
+classifier_model = DecisionTreeClassifier()
+classifier_model.fit(X_train_classification, y_train_classification)
+predictions_classification = classifier_model.predict(X_test_classification)
+
+# Regression using DecisionTreeRegressor
+regressor_model = DecisionTreeRegressor()
+regressor_model.fit(X_train_regression, y_train_regression)
+predictions_regression = regressor_model.predict(X_test_regression)
+
+# Evaluate models
+accuracy = accuracy_score(y_test_classification, predictions_classification)
+mse = mean_squared_error(y_test_regression, predictions_regression)
+
+print(f"Classification Accuracy: {accuracy}")
+print(f"Regression Mean Squared Error: {mse}")
+
+
+4.MODEL EVALUTION:
+
+from sklearn.datasets import load_iris
+from sklearn.model_selection import train_test_split
+from sklearn.tree import DecisionTreeClassifier
+from sklearn.metrics import accuracy_score, classification_report, confusion_matrix
+
+# Load the Iris dataset
+iris = load_iris()
+X_classification = iris.data
+y_classification = iris.target
+
+# Split the data into training and testing sets
+X_train_classification, X_test_classification, y_train_classification, y_test_classification = train_test_split(
+    X_classification, y_classification, test_size=0.2, random_state=42
+)
+
+# Classification using DecisionTreeClassifier
+classifier_model = DecisionTreeClassifier()
+classifier_model.fit(X_train_classification, y_train_classification)
+predictions_classification = classifier_model.predict(X_test_classification)
+
+# Evaluate the model
+accuracy = accuracy_score(y_test_classification, predictions_classification)
+report = classification_report(y_test_classification, predictions_classification)
+matrix = confusion_matrix(y_test_classification, predictions_classification)
+
+print(f"Classification Accuracy: {accuracy}")
+print("Classification Report:")
+print(report)
+print("Confusion Matrix:")
+print(matrix)
+
+
+from sklearn.metrics import accuracy_score, classification_report, confusion_matrix
+
+accuracy = accuracy_score(y_test, predictions)
+report = classification_report(y_test, predictions)
+matrix = confusion_matrix(y_test, predictions)
+
+from sklearn.model_selection import cross_val_score
+
+scores = cross_val_score(model, X_train, y_train, cv=5)
+
+
+
+5. Advanced Concepts:
+5.1. Hyperparameter Tuning:
+Use grid search to find optimal hyperparameters.
+python
+Copy code
+from sklearn.model_selection import GridSearchCV
+
+param_grid = {'C': [0.001, 0.01, 0.1, 1, 10, 100]}
+grid_search = GridSearchCV(LogisticRegression(), param_grid, cv=5)
+grid_search.fit(X_train, y_train)
+best_params = grid_search.best_params_
+5.2. Pipelines:
+Streamline workflows with pipelines.
+python
+Copy code
+from sklearn.pipeline import Pipeline
+from sklearn.preprocessing import StandardScaler
+
+pipeline = Pipeline([
+    ('scaler', StandardScaler()),
+    ('classifier', LogisticRegression())
+])
+
+pipeline.fit(X_train, y_train)
+5.3. Feature Engineering:
+Manipulate and transform features.
+python
+Copy code
+from sklearn.preprocessing import PolynomialFeatures
+
+poly = PolynomialFeatures(degree=2)
+X_poly = poly.fit_transform(X)
+5.4. Ensemble Methods:
+Combine multiple models for improved performance.
+python
+Copy code
+from sklearn.ensemble import RandomForestClassifier
+
+model = RandomForestClassifier()
+model.fit(X_train, y_train)
+predictions = model.predict(X_test)
+5.5. Dimensionality Reduction:
+Reduce the number of features.
+python
+Copy code
+from sklearn.decomposition import PCA
+
+pca = PCA(n_components=2)
+X_pca = pca.fit_transform(X)
+5.6. Clustering:
+Identify natural groupings in data.
+python
+Copy code
+from sklearn.cluster import KMeans
+
+kmeans = KMeans(n_clusters=3)
+labels = kmeans.fit_predict(X)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
